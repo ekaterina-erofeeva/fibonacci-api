@@ -1,7 +1,10 @@
 package com.example.fibonacciapi;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,46 +26,28 @@ public class FibonacciControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void testGetFirstNFibonacci() throws Exception {
-        mockMvc.perform(get("/fibonacciSeries/first/1"))
+    @ParameterizedTest
+    @CsvSource(value = {"1:[0]", "10:[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]", "20:[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181]"}, delimiter = ':')
+    public void testGetFirstNFibonacci(String input, String expected) throws Exception {
+        mockMvc.perform(get("/fibonacciSeries/first/" + input))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[0]"));
-
-        mockMvc.perform(get("/fibonacciSeries/first/5"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[0, 1, 1, 2, 3]"));
-
-        mockMvc.perform(get("/fibonacciSeries/first/10"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]"));
-
+                .andExpect(content().json(expected));
     }
 
-    @Test
-    public void testGetFirstNFibonacciInvalidInput() throws Exception {
-        mockMvc.perform(get("/fibonacciSeries/first/0"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Your input number is negative, please provide a number > 0"));
-
-        mockMvc.perform(get("/fibonacciSeries/first/-10"))
+    @ParameterizedTest
+    @ValueSource(ints = {0, -10, -120})
+    public void testGetFirstNFibonacciInvalidInput(int n) throws Exception {
+        mockMvc.perform(get("/fibonacciSeries/first/" + n))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Your input number is negative, please provide a number > 0"));
     }
 
-    @Test
-    public void testGetNthFibonacci() throws Exception {
-        mockMvc.perform(get("/fibonacciSeries/1"))
+    @ParameterizedTest
+    @CsvSource(value = {"1:0", "5:3", "10:34", "20:4181"}, delimiter = ':')
+    public void testGetNthFibonacci(String input, String expected) throws Exception {
+        mockMvc.perform(get("/fibonacciSeries/" + input))
                 .andExpect(status().isOk())
-                .andExpect(content().string("0"));
-
-        mockMvc.perform(get("/fibonacciSeries/5"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("3"));
-
-        mockMvc.perform(get("/fibonacciSeries/10"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("34"));
+                .andExpect(content().string(expected));
     }
 
     @Test

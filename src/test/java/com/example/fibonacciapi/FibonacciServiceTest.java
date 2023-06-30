@@ -6,8 +6,13 @@ import com.example.fibonacciapi.service.FibonacciService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
 
 public class FibonacciServiceTest {
 
@@ -19,20 +24,12 @@ public class FibonacciServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void testFirstNFibonacci() {
-        long[] expected_1 = {0};
-        long[] result_1 = fibonacciService.firstNFibonacci(1);
-
-        long[] expected_10 = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34};
-        long[] result_10 = fibonacciService.firstNFibonacci(10);
-
-        long[] expected_20 = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181};
-        long[] result_20 = fibonacciService.firstNFibonacci(20);
-
-        Assertions.assertArrayEquals(expected_1, result_1);
-        Assertions.assertArrayEquals(expected_10, result_10);
-        Assertions.assertArrayEquals(expected_20, result_20);
+    @ParameterizedTest
+    @CsvSource(value = {"1:[0]", "10:[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]", "20:[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181]"}, delimiter = ':')
+    public void testFirstNFibonacci(String input, String expected) {
+        long[] result = fibonacciService.firstNFibonacci(Integer.parseInt(input));
+        String resultStr = Arrays.toString(result);
+        Assertions.assertEquals(expected, resultStr);
     }
 
     @Test
@@ -48,20 +45,12 @@ public class FibonacciServiceTest {
         });
     }
 
-    @Test
-    public void testNthFibonacci() {
-        long expected_1 = 0;
-        long result_1 = fibonacciService.nthFibonacci(1);
-
-        long expected_5 = 3;
-        long result_5 = fibonacciService.nthFibonacci(5);
-
-        long expected_10 = 34;
-        long result_10 = fibonacciService.nthFibonacci(10);
-
-        Assertions.assertEquals(expected_1, result_1);
-        Assertions.assertEquals(expected_5, result_5);
-        Assertions.assertEquals(expected_10, result_10);
+    @ParameterizedTest
+    @CsvSource(value = {"1:0", "2:1", "5:3", "10:34", "20:4181"}, delimiter = ':')
+    public void testNthFibonacci(String input, String expected) {
+        long result = fibonacciService.nthFibonacci(Integer.parseInt(input));
+        String resultStr = Long.toString(result);
+        Assertions.assertEquals(expected, resultStr);
     }
 
     @Test
@@ -77,15 +66,16 @@ public class FibonacciServiceTest {
         });
     }
 
-    @Test
-    public void testIsFibonacci() {
-        Assertions.assertTrue(fibonacciService.isFibonacci(0));
-        Assertions.assertTrue(fibonacciService.isFibonacci(1));
-        Assertions.assertTrue(fibonacciService.isFibonacci(8));
-        Assertions.assertTrue(fibonacciService.isFibonacci(13));
-        Assertions.assertFalse(fibonacciService.isFibonacci(4));
-        Assertions.assertFalse(fibonacciService.isFibonacci(10));
-        Assertions.assertFalse(fibonacciService.isFibonacci(122));
+    @ParameterizedTest
+    @ValueSource(longs = {0, 1, 8, 13})
+    public void testIsFibonacciTrue(long n) {
+        Assertions.assertTrue(fibonacciService.isFibonacci(n));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {10, 122, 134, 565})
+    public void testIsFibonacciFalse(long n) {
+        Assertions.assertFalse(fibonacciService.isFibonacci(n));
     }
 
     @Test
