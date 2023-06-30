@@ -23,7 +23,7 @@ public class FibonacciService {
                 a = b;
                 b = c + b;
                 if (b < 0) {
-                    throw new LargeInputException("Your input number is too large, choose a number <= " + (n - 1));
+                    throw new LargeInputException("Your input number is too large, choose a number <= 93");
                 }
             }
             return b;
@@ -41,7 +41,7 @@ public class FibonacciService {
             for (int i = 2; i < n; i++) {
                 result[i] = result[i - 1] + result[i - 2];
                 if (result[i] < 0) {
-                    throw new LargeInputException("Your input number is too large, choose a number <= " + (n - 1));
+                    throw new LargeInputException("Your input number is too large, choose a number <= 93");
                 }
             }
         }
